@@ -78,27 +78,27 @@ This query will get an Event with all the available parameters. It will get an E
 {
 	Event(func: uid(0x3)) {
 		uid
-		Name
-		Time
-		Description
-		Data
-		HostingChapter {
-			Title
-			State
-			City
-			Contact {
-				Name
-				PhoneNumber
-				Email
-				Facebook
-				Twitter
+		name
+		time
+		description
+		data
+		hosting_chapter {
+			title
+			state
+			city
+			contact {
+				name
+				phone_number
+				email
+				facebook
+				twitter
 			}
 		}
-		Location {
-			Name
-			State
-			City
-			ZipCode
+		location {
+			name
+			state
+			city
+			zip_code
 		}
 	}
 }
