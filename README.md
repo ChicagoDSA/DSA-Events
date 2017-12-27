@@ -10,7 +10,7 @@ This API is a nice way to interface with Dgraph, and has the 3 following endpoin
 - `/mutate`
 - `/alter`
 
-To understand what mutations and alterations are, you can take a look over [here](https://tour.dgraph.io/) to understand the fundamentals of graph database interactions.
+To understand what mutations and alterations are, you can take a look over [here](https://docs.dgraph.io/master/query-language/) to understand the fundamentals of graph database interactions.
 
 ---
 
