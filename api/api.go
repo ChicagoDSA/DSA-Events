@@ -1,7 +1,7 @@
 package api
 
 import (
-	"DSA/payloads"
+	"github.com/ChicagoDSA/DSA-Events/payloads"
 
 	"bytes"
 	"context"
@@ -36,12 +36,12 @@ func QueryHandler(c *gin.Context) {
 
 	err = json.Unmarshal(resp.Json, &root)
 	if err != nil {
-		log.Fatal("Error umarshalling Dgraph query response.")
+		log.WithError(err).Fatal("Error umarshalling Dgraph query response.")
 	}
 
 	err = commitTxn(txn)
 	if err != nil {
-		log.Fatal("Error commiting query transaction.")
+		log.WithError(err).Fatal("Error commiting query transaction.")
 	}
 
 	c.JSON(http.StatusOK, root.Event)
@@ -88,7 +88,7 @@ func MutationHandler(c *gin.Context) {
 	// Commit mutation
 	err = commitTxn(txn)
 	if err != nil {
-		log.Fatal("Error commiting mutation transaction.")
+		log.WithError(err).Fatal("Error commiting mutation transaction.")
 	}
 
 	c.JSON(http.StatusOK, resp.Uids)
