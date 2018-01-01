@@ -1,7 +1,7 @@
 package main
 
 import (
-	"DSA/api"
+	"github.com/ChicagoDSA/DSA-Events/api"
 
 	"flag"
 	"os"
@@ -34,6 +34,38 @@ func init() {
 	flag.StringVar(&grpcPort, "grpcPort", grpcPort, "")
 }
 
+func setUpRouter(logger *logrus.Logger, dGraphClient *client.Dgraph) *gin.Engine {
+	router := gin.New()
+
+	router.Use(gin.Logger())
+	router.Use(gin.Recovery())
+
+	router.Use(func(c *gin.Context) {
+		c.Writer.Header().Set("Content-Type", "text")
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(200)
+			return
+		}
+	})
+
+	router.Use(func(c *gin.Context) {
+		c.Set("log", logger)
+	})
+	router.Use(func(c *gin.Context) {
+		c.Set("dGraphClient", dGraphClient)
+	})
+	router.POST("/query", api.QueryHandler)
+	router.POST("/mutate", api.MutationHandler)
+	router.POST("/alter", api.AlterationHandler)
+	router.GET("/test", func(c *gin.Context) {
+		c.String(200, "test")
+	})
+
+	return router
+}
+
 func main() {
 	flag.Parse()
 
@@ -49,25 +81,6 @@ func main() {
 	}
 	logger.WithField("level", logLevel.String()).Debug("Log Level Set")
 
-	router := gin.New()
-
-	router.Use(gin.Logger())
-	router.Use(gin.Recovery())
-
-	router.Use(func(c *gin.Context) {
-		c.Set("log", logger)
-	})
-
-	router.Use(func(c *gin.Context) {
-		c.Writer.Header().Set("Content-Type", "text")
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-		if c.Request.Method == "OPTIONS" {
-			c.AbortWithStatus(200)
-			return
-		}
-	})
-
 	// Establish DGraph connection via gRPC
 	conn, err := grpc.Dial(grpcHost+":"+grpcPort, grpc.WithInsecure())
 	if err != nil {
@@ -77,13 +90,8 @@ func main() {
 
 	dgc := protosAPI.NewDgraphClient(conn)
 	dGraphClient := client.NewDgraphClient(dgc)
-	router.Use(func(c *gin.Context) {
-		c.Set("dGraphClient", dGraphClient)
-	})
 
-	router.POST("/query", api.QueryHandler)
-	router.POST("/mutate", api.MutationHandler)
-	router.POST("/alter", api.AlterationHandler)
+	router := setUpRouter(logger, dGraphClient)
 
 	go func() {
 		c := make(chan os.Signal, 1)

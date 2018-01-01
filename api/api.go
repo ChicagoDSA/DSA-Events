@@ -1,7 +1,7 @@
 package api
 
 import (
-	"DSA/payloads"
+	"github.com/ChicagoDSA/DSA-Events/payloads"
 
 	"bytes"
 	"context"
@@ -36,19 +36,19 @@ func QueryHandler(c *gin.Context) {
 
 	err = json.Unmarshal(resp.Json, &root)
 	if err != nil {
-		log.Fatal("Error umarshalling Dgraph query response.")
+		log.WithError(err).Fatal("Error umarshalling Dgraph query response.")
 	}
 
 	err = commitTxn(txn)
 	if err != nil {
-		log.Fatal("Error commiting query transaction.")
+		log.WithError(err).Fatal("Error commiting query transaction.")
 	}
 
 	c.JSON(http.StatusOK, root.Event)
 }
 
 func MutationHandler(c *gin.Context) {
-	log := c.MustGet("log").(*logrus.Logger).WithField("api", "queryHandler")
+	log := c.MustGet("log").(*logrus.Logger).WithField("api", "mutationHandler")
 	dGraphClient := c.MustGet("dGraphClient").(*client.Dgraph)
 
 	txn := dGraphClient.NewTxn()
@@ -70,12 +70,10 @@ func MutationHandler(c *gin.Context) {
 	eventComparatorData := payloads.GEvent{Uid: eventRequest.Uid}
 	evenComparator, _ := json.Marshal(eventComparatorData)
 	if bytes.Equal(eventJson, evenComparator) {
-		log.Info("Deleting node!")
-		log.Info(string(eventJson))
-		// delete event
+		log.Warn("Deleting node.")
 		eventMutation.DeleteJson = eventJson
 	} else {
-		// create/update event
+		log.Warn("Creating/Updating node.")
 		eventMutation.SetJson = eventJson
 	}
 
@@ -88,7 +86,7 @@ func MutationHandler(c *gin.Context) {
 	// Commit mutation
 	err = commitTxn(txn)
 	if err != nil {
-		log.Fatal("Error commiting mutation transaction.")
+		log.WithError(err).Fatal("Error commiting mutation transaction.")
 	}
 
 	c.JSON(http.StatusOK, resp.Uids)
