@@ -34,7 +34,7 @@ func init() {
 	flag.StringVar(&grpcPort, "grpcPort", grpcPort, "")
 }
 
-func setUpRouter() *gin.Engine {
+func setUpRouter(logger *logrus.Logger, dGraphClient *client.Dgraph) *gin.Engine {
 	router := gin.New()
 
 	router.Use(gin.Logger())
@@ -50,9 +50,18 @@ func setUpRouter() *gin.Engine {
 		}
 	})
 
+	router.Use(func(c *gin.Context) {
+		c.Set("log", logger)
+	})
+	router.Use(func(c *gin.Context) {
+		c.Set("dGraphClient", dGraphClient)
+	})
 	router.POST("/query", api.QueryHandler)
 	router.POST("/mutate", api.MutationHandler)
 	router.POST("/alter", api.AlterationHandler)
+	router.GET("/test", func(c *gin.Context) {
+		c.String(200, "test")
+	})
 
 	return router
 }
@@ -82,13 +91,7 @@ func main() {
 	dgc := protosAPI.NewDgraphClient(conn)
 	dGraphClient := client.NewDgraphClient(dgc)
 
-	router := setUpRouter()
-	router.Use(func(c *gin.Context) {
-		c.Set("log", logger)
-	})
-	router.Use(func(c *gin.Context) {
-		c.Set("dGraphClient", dGraphClient)
-	})
+	router := setUpRouter(logger, dGraphClient)
 
 	go func() {
 		c := make(chan os.Signal, 1)

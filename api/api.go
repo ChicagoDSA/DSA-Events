@@ -48,7 +48,7 @@ func QueryHandler(c *gin.Context) {
 }
 
 func MutationHandler(c *gin.Context) {
-	log := c.MustGet("log").(*logrus.Logger).WithField("api", "queryHandler")
+	log := c.MustGet("log").(*logrus.Logger).WithField("api", "mutationHandler")
 	dGraphClient := c.MustGet("dGraphClient").(*client.Dgraph)
 
 	txn := dGraphClient.NewTxn()
@@ -76,6 +76,8 @@ func MutationHandler(c *gin.Context) {
 		eventMutation.DeleteJson = eventJson
 	} else {
 		// create/update event
+		log.Info("Creating node!")
+		log.Info(string(eventJson))
 		eventMutation.SetJson = eventJson
 	}
 
