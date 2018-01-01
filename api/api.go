@@ -15,6 +15,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// Handles all GraphQL+_ queries
 func QueryHandler(c *gin.Context) {
 	log := c.MustGet("log").(*logrus.Logger).WithField("api", "queryHandler")
 	dGraphClient := c.MustGet("dGraphClient").(*client.Dgraph)
@@ -47,6 +48,7 @@ func QueryHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, root.Event)
 }
 
+// Handles all GraphQL+_ mutations
 func MutationHandler(c *gin.Context) {
 	log := c.MustGet("log").(*logrus.Logger).WithField("api", "mutationHandler")
 	dGraphClient := c.MustGet("dGraphClient").(*client.Dgraph)
@@ -92,6 +94,7 @@ func MutationHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, resp.Uids)
 }
 
+// Handles all GraphQL+_ alterations (usually handled by an admin)
 func AlterationHandler(c *gin.Context) {
 	log := c.MustGet("log").(*logrus.Logger).WithField("api", "alterationHandler")
 	dGraphClient := c.MustGet("dGraphClient").(*client.Dgraph)

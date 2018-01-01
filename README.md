@@ -2,6 +2,8 @@
 
 **An API for DSA Events**
 
+[![GoDoc](https://godoc.org/github.com/ChicagoDSA/DSA-Events/main?status.svg)](https://godoc.org/github.com/ChicagoDSA/DSA-Events/main)
+
 [Dgraph](https://dgraph.io/) is a powerful graph database written in [Go](https://golang.org/). The query language for DGraph is based off of [GraphQL](http://graphql.org/), called [GraphQL+-](https://docs.dgraph.io/query-language/). 
 
 This API is a nice way to interface with Dgraph, and has the 3 following endpoints:
