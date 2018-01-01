@@ -5,7 +5,6 @@ import (
 
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -66,7 +65,57 @@ func testHTTPResponse(t *testing.T, r *gin.Engine, req *http.Request, f func(w *
 	}
 }
 
-var NewEventStr string = `
+
+func getQueryEventStr(eventUid string) string {
+	return `
+	{
+		Event(func: uid(`+eventUid+`)) {
+			uid
+			name
+			time
+			description
+			data
+			hosting_chapter {
+				title
+				state
+				city
+				contact {
+					name
+					phone_number
+					email
+					facebook
+					twitter
+				}
+			}
+			location {
+				name
+				state
+				city
+				zip_code
+			}
+		}
+	}
+	`
+}
+
+func getDeleteEventStr(eventUid string) string {
+	return `
+	{
+		"uid":"`+eventUid+`"
+	}
+	`
+}
+
+func getUpdateEventStr(eventUid string) string {
+	return `
+	{
+		"uid": "`+eventUid+`",
+		"name": "UPDATED NAME"
+	}
+	`
+}
+
+var CreateEventStr string = `
 {
 	"name":"Created Event 1",
 	"date":"08-11-17",
@@ -93,15 +142,19 @@ var NewEventStr string = `
 }
 `
 
-func TestCreateEvent(t *testing.T) {
+
+func TestMutations(t *testing.T) {
 	router := getRouter()
 
 	router.POST("/mutate", api.MutationHandler)
+	router.POST("/query", api.QueryHandler)
 
-	var jsonStr = []byte(NewEventStr)
+	var jsonStr = []byte(CreateEventStr)
 
 	req, _ := http.NewRequest("POST", "/mutate", bytes.NewBuffer(jsonStr))
+	newEventUid := "";
 
+	// Create new event
 	testHTTPResponse(t, router, req, func(w *httptest.ResponseRecorder) bool {
 		statusOK := w.Code == http.StatusOK
 
@@ -114,7 +167,58 @@ func TestCreateEvent(t *testing.T) {
 		}
 		newEvent := f.(map[string]interface{})
 
-		fmt.Printf("New event id: " + newEvent["blank-0"].(string) + "\n")
+		logger.WithFields(logrus.Fields{
+			"newEventId": newEvent["blank-0"].(string),
+		}).Info("Created test event.")
+		newEventUid = newEvent["blank-0"].(string)
+
+		return statusOK
+	})
+
+	// Query for new event
+	req_2, _ := http.NewRequest("POST", "/query", bytes.NewBuffer([]byte(getQueryEventStr(newEventUid))))
+	testHTTPResponse(t, router, req_2, func(w *httptest.ResponseRecorder) bool {
+		statusOK := w.Code == http.StatusOK
+
+		logger.WithFields(logrus.Fields{
+			"statusCode": w.Code,
+		}).Info("Queried newly created test event.")
+
+		return statusOK
+	})
+
+	// Update event's name
+	req_3, _ := http.NewRequest("POST", "/mutate", bytes.NewBuffer([]byte(getUpdateEventStr(newEventUid))))
+	testHTTPResponse(t, router, req_3, func(w *httptest.ResponseRecorder) bool {
+		statusOK := w.Code == http.StatusOK
+
+		logger.WithFields(logrus.Fields{
+			"statusCode": w.Code,
+		}).Info("Updated name of newly created test event.")
+
+		return statusOK
+	})
+
+	// Query for updated event
+	req_4, _ := http.NewRequest("POST", "/query", bytes.NewBuffer([]byte(getQueryEventStr(newEventUid))))
+	testHTTPResponse(t, router, req_4, func(w *httptest.ResponseRecorder) bool {
+		statusOK := w.Code == http.StatusOK
+
+		logger.WithFields(logrus.Fields{
+			"statusCode": w.Code,
+		}).Info("Queried newly created test event.")
+
+		return statusOK
+	})
+
+	// Delete new event
+	req_5, _ := http.NewRequest("POST", "/mutate", bytes.NewBuffer([]byte(getDeleteEventStr(newEventUid))))
+	testHTTPResponse(t, router, req_5, func(w *httptest.ResponseRecorder) bool {
+		statusOK := w.Code == http.StatusOK
+
+		logger.WithFields(logrus.Fields{
+			"statusCode": w.Code,
+		}).Info("Updated name of newly created test event.")
 
 		return statusOK
 	})
