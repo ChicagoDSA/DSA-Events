@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/ChicagoDSA/DSA-Events/payloads"
 	"github.com/ChicagoDSA/DSA-Events/api"
+	"github.com/ChicagoDSA/DSA-Events/payloads"
 
 	"bytes"
 	"encoding/json"
@@ -66,11 +66,10 @@ func testHTTPResponse(t *testing.T, r *gin.Engine, req *http.Request, f func(w *
 	}
 }
 
-
 func getQueryEventStr(eventUid string) string {
 	return `
 	{
-		Event(func: uid(`+eventUid+`)) {
+		Event(func: uid(` + eventUid + `)) {
 			uid
 			name
 			time
@@ -102,7 +101,7 @@ func getQueryEventStr(eventUid string) string {
 func getDeleteEventStr(eventUid string) string {
 	return `
 	{
-		"uid":"`+eventUid+`"
+		"uid":"` + eventUid + `"
 	}
 	`
 }
@@ -110,7 +109,7 @@ func getDeleteEventStr(eventUid string) string {
 func getUpdateEventStr(eventUid string) string {
 	return `
 	{
-		"uid": "`+eventUid+`",
+		"uid": "` + eventUid + `",
 		"name": "UPDATED NAME"
 	}
 	`
@@ -143,7 +142,6 @@ var CreateEventStr string = `
 }
 `
 
-
 func TestMutations(t *testing.T) {
 	router := getRouter()
 
@@ -153,7 +151,7 @@ func TestMutations(t *testing.T) {
 	var jsonStr = []byte(CreateEventStr)
 
 	req, _ := http.NewRequest("POST", "/mutate", bytes.NewBuffer(jsonStr))
-	newEventUid := "";
+	newEventUid := ""
 
 	// Create new event
 	testHTTPResponse(t, router, req, func(w *httptest.ResponseRecorder) bool {
@@ -190,8 +188,8 @@ func TestMutations(t *testing.T) {
 		err = json.Unmarshal([]byte(resp), &f)
 
 		logger.WithFields(logrus.Fields{
-			"uid": f[0].Uid,
-			"eventName": f[0].Name,
+			"uid":        f[0].Uid,
+			"eventName":  f[0].Name,
 			"statusCode": w.Code,
 		}).Info("Queried newly created test event.")
 
