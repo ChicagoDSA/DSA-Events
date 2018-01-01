@@ -180,8 +180,14 @@ func TestMutations(t *testing.T) {
 	testHTTPResponse(t, router, req_2, func(w *httptest.ResponseRecorder) bool {
 		statusOK := w.Code == http.StatusOK
 
+		resp, err := ioutil.ReadAll(w.Result().Body)
+		if err != nil {
+			logger.Error("Error reading response")
+		}
+
 		logger.WithFields(logrus.Fields{
 			"statusCode": w.Code,
+			"event": string(resp),
 		}).Info("Queried newly created test event.")
 
 		return statusOK
@@ -204,8 +210,14 @@ func TestMutations(t *testing.T) {
 	testHTTPResponse(t, router, req_4, func(w *httptest.ResponseRecorder) bool {
 		statusOK := w.Code == http.StatusOK
 
+		resp, err := ioutil.ReadAll(w.Result().Body)
+		if err != nil {
+			logger.Error("Error reading response")
+		}
+
 		logger.WithFields(logrus.Fields{
 			"statusCode": w.Code,
+			"event": string(resp),
 		}).Info("Queried newly created test event.")
 
 		return statusOK

@@ -70,10 +70,10 @@ func MutationHandler(c *gin.Context) {
 	eventComparatorData := payloads.GEvent{Uid: eventRequest.Uid}
 	evenComparator, _ := json.Marshal(eventComparatorData)
 	if bytes.Equal(eventJson, evenComparator) {
-		log.Info("Deleting node.")
+		log.Warn("Deleting node.")
 		eventMutation.DeleteJson = eventJson
 	} else {
-		log.Info("Creating/Updating node.")
+		log.Warn("Creating/Updating node.")
 		eventMutation.SetJson = eventJson
 	}
 
