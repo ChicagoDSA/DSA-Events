@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/ChicagoDSA/DSA-Events/payloads"
 	"github.com/ChicagoDSA/DSA-Events/api"
 
 	"bytes"
@@ -185,9 +186,13 @@ func TestMutations(t *testing.T) {
 			logger.Error("Error reading response")
 		}
 
+		var f []payloads.Event
+		err = json.Unmarshal([]byte(resp), &f)
+
 		logger.WithFields(logrus.Fields{
+			"uid": f[0].Uid,
+			"eventName": f[0].Name,
 			"statusCode": w.Code,
-			"event": string(resp),
 		}).Info("Queried newly created test event.")
 
 		return statusOK
@@ -215,10 +220,12 @@ func TestMutations(t *testing.T) {
 			logger.Error("Error reading response")
 		}
 
+		var f []payloads.Event
+		err = json.Unmarshal([]byte(resp), &f)
+
 		logger.WithFields(logrus.Fields{
-			"statusCode": w.Code,
-			"event": string(resp),
-		}).Info("Queried newly created test event.")
+			"eventName": f[0].Name,
+		}).Info("Queried newly updated test event.")
 
 		return statusOK
 	})
@@ -230,7 +237,7 @@ func TestMutations(t *testing.T) {
 
 		logger.WithFields(logrus.Fields{
 			"statusCode": w.Code,
-		}).Info("Updated name of newly created test event.")
+		}).Info("Deleted newly created test event.")
 
 		return statusOK
 	})
