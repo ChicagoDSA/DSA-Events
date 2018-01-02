@@ -4,7 +4,7 @@
 
 [![GoDoc](https://godoc.org/github.com/ChicagoDSA/DSA-Events?status.svg)](https://godoc.org/github.com/ChicagoDSA/DSA-Events)
 [![GitHub version](https://badge.fury.io/gh/ChicagoDSA%2FDSA-Events.svg)](https://badge.fury.io/gh/ChicagoDSA%2FDSA-Events)
-
+[![Build Status](https://travis-ci.org/ChicagoDSA/DSA-Events.svg?branch=master)](https://travis-ci.org/ChicagoDSA/DSA-Events)
 
 [Dgraph](https://dgraph.io/) is a powerful graph database written in [Go](https://golang.org/). The query language for DGraph is based off of [GraphQL](http://graphql.org/), called [GraphQL+-](https://docs.dgraph.io/query-language/). 
 
