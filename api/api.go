@@ -40,7 +40,7 @@ func QueryHandler(c *gin.Context) {
 		log.WithError(err).Fatal("Error umarshalling Dgraph query response.")
 	}
 
-	err = commitTxn(txn)
+	err = txn.Commit(context.Background())
 	if err != nil {
 		log.WithError(err).Fatal("Error commiting query transaction.")
 	}
@@ -56,7 +56,7 @@ func MutationHandler(c *gin.Context) {
 	txn := dGraphClient.NewTxn()
 	defer txn.Discard(context.Background())
 
-	eventRequest := &payloads.GEvent{}
+	eventRequest := &payloads.EventRequest{}
 	err := c.BindJSON(eventRequest)
 	if err != nil {
 		log.WithError(err).Fatal("Error unmarshalling mutation request body into Event object.")
@@ -69,7 +69,7 @@ func MutationHandler(c *gin.Context) {
 		log.WithError(err).Fatal("Error marshalling mutation request into JSON.")
 	}
 
-	eventComparatorData := payloads.GEvent{Uid: eventRequest.Uid}
+	eventComparatorData := payloads.EventRequest{Uid: eventRequest.Uid}
 	evenComparator, _ := json.Marshal(eventComparatorData)
 	if bytes.Equal(eventJson, evenComparator) {
 		log.Warn("Deleting node.")
@@ -86,7 +86,7 @@ func MutationHandler(c *gin.Context) {
 	}
 
 	// Commit mutation
-	err = commitTxn(txn)
+	err = txn.Commit(context.Background())
 	if err != nil {
 		log.WithError(err).Fatal("Error commiting mutation transaction.")
 	}
@@ -108,8 +108,4 @@ func AlterationHandler(c *gin.Context) {
 	if err != nil {
 		log.WithError(err).Fatal("Error with GraphQL+- alteration.")
 	}
-}
-
-func commitTxn(txn *client.Txn) (err error) {
-	return txn.Commit(context.Background())
 }

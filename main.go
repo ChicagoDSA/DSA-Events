@@ -3,9 +3,12 @@ package main
 import (
 	"github.com/ChicagoDSA/DSA-Events/api"
 
+	"context"
 	"flag"
+	"net/http"
 	"os"
 	"os/signal"
+	"time"
 
 	"github.com/dgraph-io/dgraph/client"
 	protosAPI "github.com/dgraph-io/dgraph/protos/api"
@@ -15,7 +18,7 @@ import (
 )
 
 var (
-	host string = "0.0.0.0"
+	host string = "localhost"
 	port string = "5000"
 
 	log string = "debug"
@@ -59,9 +62,6 @@ func setUpRouter(logger *logrus.Logger, dGraphClient *client.Dgraph) *gin.Engine
 	router.POST("/query", api.QueryHandler)
 	router.POST("/mutate", api.MutationHandler)
 	router.POST("/alter", api.AlterationHandler)
-	router.GET("/test", func(c *gin.Context) {
-		c.String(200, "test")
-	})
 
 	return router
 }
@@ -86,23 +86,33 @@ func main() {
 	if err != nil {
 		logrus.WithError(err).Fatal("Error establishing gRPC connection with DGraph instance.")
 	}
-	defer conn.Close()
+	logrus.RegisterExitHandler(func() {
+		conn.Close()
+	})
 
 	dgc := protosAPI.NewDgraphClient(conn)
 	dGraphClient := client.NewDgraphClient(dgc)
 
 	router := setUpRouter(logger, dGraphClient)
+	server := &http.Server{
+		Addr:    ":" + port,
+		Handler: router,
+	}
 
 	go func() {
 		c := make(chan os.Signal, 1)
-		signal.Notify(c, os.Interrupt)
-		signal.Notify(c, os.Kill)
+		signal.Notify(c, os.Interrupt, os.Kill)
 		_ = (<-c)
 		logger.Info("Shutting down...")
+
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		err := server.Shutdown(ctx)
+		if err != nil {
+			logger.WithError(server.Shutdown(ctx)).Fatal("Server shutdown")
+		}
 		os.Exit(0)
 	}()
 
 	logger.WithError(router.Run(host + ":" + port)).Fatal("Error in setting up HTTP server.")
-
-	logger.Info("API is running on port " + port)
 }

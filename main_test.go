@@ -184,7 +184,7 @@ func TestMutations(t *testing.T) {
 			logger.Error("Error reading response")
 		}
 
-		var f []payloads.Event
+		var f []payloads.EventResponse
 		err = json.Unmarshal([]byte(resp), &f)
 
 		logger.WithFields(logrus.Fields{
@@ -218,7 +218,7 @@ func TestMutations(t *testing.T) {
 			logger.Error("Error reading response")
 		}
 
-		var f []payloads.Event
+		var f []payloads.EventResponse
 		err = json.Unmarshal([]byte(resp), &f)
 
 		logger.WithFields(logrus.Fields{
