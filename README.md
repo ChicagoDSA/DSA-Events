@@ -30,22 +30,11 @@ One important note is that this API uses docker as middleware, so please follow 
 
 Run the following commands to get your dgraph instance running locally.
 
-### Start DGraph Zero (instance manager):
+### Docker compose
 
-This will run the dgraphzero container and store temporary data in `/tmp/data`:
+To get the database running, navigate to the project's `/db` directory and simply run docker compose:
 
-`docker run --rm -it -p 8080:8080 -p 9080:9080 -v /tmp/data:/dgraph --name DSA_Events dgraph/dgraph dgraph zero --port_offset -2000`
-
-### Start DGraph Instance:
-
-This will execute the docker image:
-
-`docker exec -it DSA_Events dgraph server --memory_mb 2048 --zero localhost:5080`
-
-### DEPRECATED (Dgraph prior to dgraphzero implementation)
-Run DGraph instance with ports mapped:
-
-`docker run --rm -it -p 8080:8080 -p 9080:9080 -v ~/dgraph:/dgraph --name dgraph dgraph/dgraph dgraph --bindall=true --memory_mb 2048`
+`docker-compose up -d`
 
 ---
 
@@ -63,11 +52,19 @@ Run:
 
 `make build`
 
+(Without Make):
+
+`go build main.go`
+
 ## Run project
 
 Run:
 
 `make run`
+
+(Without Make):
+
+`./main`
 
 ---
 
@@ -80,16 +77,15 @@ This query will get an Event with all the available parameters. It will get an E
 ##### Body:
 ```
 {
-	Event(func: uid(0x3)) {
+	Event(func: uid(0x2)) {
 		uid
 		name
 		time
+		location
 		description
-		data
-		hosting_chapter {
-			title
-			state
-			city
+		chapter {
+			name
+			location
 			contact {
 				name
 				phone_number
@@ -98,13 +94,11 @@ This query will get an Event with all the available parameters. It will get an E
 				twitter
 			}
 		}
-		location {
+		working_group {
 			name
-			state
-			city
-			zip_code
+			description
 		}
-	}
+	}	
 }
 ```
 
@@ -114,30 +108,48 @@ This query will get an Event with all the available parameters. It will get an E
 This is a sample mutation that will create a new Event with the parameters given.
 ##### Body:
 ```
-{
-	"name":"Created Event",
-	"date":"08-11-17",
-	"time":"14:30",
-	"hosting_chapter":{
-		"title":"Milwaukee DSA",
-		"city":"Milwaukee",
-		"state":"WI",
-		"contact":{
-			"name":"Jeb Bush",
-			"phone_number":"123-456-7890",
-			"email":"jeb@hotmail.com",
-			"facebook":"jebisthebest",
-			"twitter":"@jebisgood"
-		}
-	},
-	"description":"Test Description",
-	"location":{
-		"name":"Location Name!",
-		"city":"Milwaukee",
-		"state":"WI",
-		"zip_code":"12345"
+[
+	{
+		"uid": "0x2",
+		"name": "Labor Media Training",
+		"time": "2018-05-01T15:30:00Z",
+		"description": "Are you new to labor activism and want to get better at communication when someone sticks a camera in front of you? Then this event is just for you.",
+		"location": {
+			"type": "Point",
+			"coordinates": [
+				41.8803304,
+				-87.6662756
+			]
+		},
+		"working_group": [
+			{
+				"name": "CDSA Labor Working Group",
+				"description": "Chicago DSA Labor with a focus on unions."
+			}
+		],
+		"chapter": [
+			{
+				"name": "CDSA",
+				"location": {
+					"type": "Point",
+					"coordinates": [
+						41.9317779,
+						-87.7126819
+					]
+				},
+				"contact": [
+					{
+						"name": "John Doe",
+						"phone_number": "(123) 456-7890",
+						"email": "jdoe@hotmail.com",
+						"facebook": "John Doe",
+						"twitter": "@JohnDoe"
+					}
+				]
+			}
+		]
 	}
-}
+]
 ```
 
 ---

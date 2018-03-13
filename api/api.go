@@ -15,7 +15,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// Handles all GraphQL+_ queries
+// QueryHandler Handles all GraphQL+_ queries
 func QueryHandler(c *gin.Context) {
 	log := c.MustGet("log").(*logrus.Logger).WithField("api", "queryHandler")
 	dGraphClient := c.MustGet("dGraphClient").(*client.Dgraph)
@@ -48,7 +48,7 @@ func QueryHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, root.Event)
 }
 
-// Handles all GraphQL+_ mutations
+// MutationHandler Handles all GraphQL+_ mutations
 func MutationHandler(c *gin.Context) {
 	log := c.MustGet("log").(*logrus.Logger).WithField("api", "mutationHandler")
 	dGraphClient := c.MustGet("dGraphClient").(*client.Dgraph)
@@ -64,19 +64,19 @@ func MutationHandler(c *gin.Context) {
 
 	eventMutation := &protosAPI.Mutation{}
 
-	eventJson, err := json.Marshal(eventRequest)
+	eventJSON, err := json.Marshal(eventRequest)
 	if err != nil {
 		log.WithError(err).Fatal("Error marshalling mutation request into JSON.")
 	}
 
-	eventComparatorData := payloads.EventRequest{Uid: eventRequest.Uid}
+	eventComparatorData := payloads.EventRequest{UID: eventRequest.UID}
 	evenComparator, _ := json.Marshal(eventComparatorData)
-	if bytes.Equal(eventJson, evenComparator) {
+	if bytes.Equal(eventJSON, evenComparator) {
 		log.Warn("Deleting node.")
-		eventMutation.DeleteJson = eventJson
+		eventMutation.DeleteJson = eventJSON
 	} else {
 		log.Warn("Creating/Updating node.")
-		eventMutation.SetJson = eventJson
+		eventMutation.SetJson = eventJSON
 	}
 
 	// Send mutation
@@ -94,7 +94,7 @@ func MutationHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, resp.Uids)
 }
 
-// Handles all GraphQL+_ alterations (usually handled by an admin)
+// AlterationHandler Handles all GraphQL+_ alterations (usually handled by an admin)
 func AlterationHandler(c *gin.Context) {
 	log := c.MustGet("log").(*logrus.Logger).WithField("api", "alterationHandler")
 	dGraphClient := c.MustGet("dGraphClient").(*client.Dgraph)

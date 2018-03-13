@@ -1,7 +1,12 @@
 package payloads
 
+type Location struct {
+	Type        string    `json:"type,omitempty"`
+	Coordinates []float64 `json:"coordinates,omitempty"`
+}
+
 type ContactRequest struct {
-	Uid         string `json:"uid,omitempty"`
+	UID         string `json:"uid,omitempty"`
 	Name        string `json:"name,omitempty"`
 	PhoneNumber string `json:"phone_number,omitempty"`
 	Email       string `json:"email,omitempty"`
@@ -9,28 +14,25 @@ type ContactRequest struct {
 	Twitter     string `json:"twitter,omitempty"`
 }
 
-type HostingChapterRequest struct {
-	Uid     string         `json:"uid,omitempty"`
-	Title   string         `json:"title,omitempty"`
-	State   string         `json:"state,omitempty"`
-	City    string         `json:"city,omitempty"`
-	Contact ContactRequest `json:"contact,omitempty"`
+type ChapterRequest struct {
+	UID      string          `json:"uid,omitempty"`
+	Name     string          `json:"name,omitempty"`
+	Location Location        `json:"location,omitempty"`
+	Contact  *ContactRequest `json:"contact,omitempty"`
 }
 
-type LocationRequest struct {
-	Uid     string `json:"uid,omitempty"`
-	Name    string `json:"name,omitempty"`
-	State   string `json:"state,omitempty"`
-	City    string `json:"city,omitempty"`
-	ZipCode string `json:"zip_code,omitempty"`
+type WorkingGroupRequest struct {
+	UID         string `json:"uid,omitempty"`
+	Name        string `json:"name,omitempty"`
+	Description string `json:"description,omitempty"`
 }
 
 type EventRequest struct {
-	Uid            string                 `json:"uid,omitempty"`
-	HostingChapter *HostingChapterRequest `json:"hosting_chapter,omitempty"`
-	Name           string                 `json:"name,omitempty"`
-	Time           string                 `json:"time,omitempty"`
-	Description    string                 `json:"description,omitempty"`
-	Date           string                 `json:"date,omitempty"`
-	Location       *LocationRequest       `json:"location,omitempty"`
+	UID          string               `json:"uid,omitempty"`
+	Name         string               `json:"name,omitempty"`
+	Time         string               `json:"time,omitempty"`
+	Description  string               `json:"description,omitempty"`
+	Location     Location             `json:"location,omitempty"`
+	WorkingGroup *WorkingGroupRequest `json:"working_group,omitempty"`
+	Chapter      *ChapterRequest      `json:"chapter,omitempty"`
 }

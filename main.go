@@ -114,5 +114,6 @@ func main() {
 		os.Exit(0)
 	}()
 
+	logger.Info("Starting...")
 	logger.WithError(router.Run(host + ":" + port)).Fatal("Error in setting up HTTP server.")
 }

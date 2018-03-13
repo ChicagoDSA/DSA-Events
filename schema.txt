@@ -1,18 +1,11 @@
-name:           string @index(term, exact, hash) .
-time:           string @index(term) .
+// Event/Hosting Chapter/Working Group
+name:           string @index(hash) .
+time:           dateTime @index(day) .
 description:    string @index(term) .
-date:           string @index(term, exact) .
+location:       geo @index(geo) .
 
-title:          string @index(term) .
-state:          string @index(term) .
-city:           string @index(term) .
-
-phone_number:    string @index(term) .
-email:          string @index(term) .
-facebook:       string @index(term) .
-twitter:        string @index(term) .
-
-city:           string @index(term) .
-email:          string @index(term) .
-
-zip_code:        string @index(term) .
+// Contact Info
+phone_number    string @index(hash) .
+email           string @index(hash) .
+facebook        string @index(hash) .
+twitter         string @index(hash) .
