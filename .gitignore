@@ -12,6 +12,7 @@
 
 # Personal notes
 dummy_data
+creds.json
 
 # Ignore any temp vim files
 *.swp
