@@ -67,6 +67,7 @@ func MutationHandler(c *gin.Context) {
 	if (!auth.ValidateOAuthToken(authHeader)) {
 		log.Info("Error authenticating!")
 		c.String(http.StatusUnauthorized, "Error authenticating!")
+		return
 	}
 
 	dGraphClient := c.MustGet("dGraphClient").(*dgo.Dgraph)
@@ -121,6 +122,7 @@ func AlterationHandler(c *gin.Context) {
 	if (!auth.ValidateOAuthToken(authHeader)) {
 		log.Info("Error authenticating!")
 		c.String(http.StatusUnauthorized, "Error authenticating!")
+		return
 	}
 
 	dGraphClient := c.MustGet("dGraphClient").(*dgo.Dgraph)

@@ -135,6 +135,6 @@ This is a sample mutation that will create a new Event with the parameters given
 
 #### Built using:
 - [Go](https://golang.org/doc/)
-- [Dgraph](https://docs.dgraph.io/)
+- [Dgraph](https://dgraph.io/)
 - [Gin-Gonic](https://gin-gonic.github.io/gin/)
 - [Logrus](https://github.com/Sirupsen/logrus)
