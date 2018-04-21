@@ -10,8 +10,8 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/dgraph-io/dgraph/client"
-	protosAPI "github.com/dgraph-io/dgraph/protos/api"
+	"github.com/dgraph-io/dgo"
+	protosAPI "github.com/dgraph-io/dgo/protos/api"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
@@ -28,7 +28,7 @@ func QueryHandler(c *gin.Context) {
 		return
 	}
 
-	dGraphClient := c.MustGet("dGraphClient").(*client.Dgraph)
+	dGraphClient := c.MustGet("dGraphClient").(*dgo.Dgraph)
 
 	txn := dGraphClient.NewTxn()
 	defer txn.Discard(context.Background())
@@ -69,7 +69,7 @@ func MutationHandler(c *gin.Context) {
 		c.String(http.StatusUnauthorized, "Error authenticating!")
 	}
 
-	dGraphClient := c.MustGet("dGraphClient").(*client.Dgraph)
+	dGraphClient := c.MustGet("dGraphClient").(*dgo.Dgraph)
 
 	txn := dGraphClient.NewTxn()
 	defer txn.Discard(context.Background())
@@ -123,7 +123,7 @@ func AlterationHandler(c *gin.Context) {
 		c.String(http.StatusUnauthorized, "Error authenticating!")
 	}
 
-	dGraphClient := c.MustGet("dGraphClient").(*client.Dgraph)
+	dGraphClient := c.MustGet("dGraphClient").(*dgo.Dgraph)
 
 	query, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {

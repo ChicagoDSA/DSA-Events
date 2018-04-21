@@ -12,8 +12,8 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/dgraph-io/dgraph/client"
-	protosAPI "github.com/dgraph-io/dgraph/protos/api"
+	"github.com/dgraph-io/dgo"
+	protosAPI "github.com/dgraph-io/dgo/protos/api"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"github.com/justinas/nosurf"
@@ -40,7 +40,7 @@ func init() {
 	flag.StringVar(&grpcPort, "grpcPort", grpcPort, "")
 }
 
-func setUpRouter(logger *logrus.Logger, dGraphClient *client.Dgraph) *gin.Engine {
+func setUpRouter(logger *logrus.Logger, dGraphClient *dgo.Dgraph) *gin.Engine {
 	router := gin.New()
 
 	router.Use(gin.Logger())
@@ -103,7 +103,7 @@ func main() {
 	})
 
 	dgc := protosAPI.NewDgraphClient(conn)
-	dGraphClient := client.NewDgraphClient(dgc)
+	dGraphClient := dgo.NewDgraphClient(dgc)
 
 	router := setUpRouter(logger, dGraphClient)
 	server := &http.Server{
