@@ -2,18 +2,21 @@ package main
 
 import (
 	"github.com/ChicagoDSA/DSA-Events/api"
+	"github.com/ChicagoDSA/DSA-Events/auth"
 
 	"context"
 	"flag"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
 
-	"github.com/dgraph-io/dgraph/client"
-	protosAPI "github.com/dgraph-io/dgraph/protos/api"
+	"github.com/dgraph-io/dgo"
+	protosAPI "github.com/dgraph-io/dgo/protos/api"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"github.com/justinas/nosurf"
 	"google.golang.org/grpc"
 )
 
@@ -37,7 +40,7 @@ func init() {
 	flag.StringVar(&grpcPort, "grpcPort", grpcPort, "")
 }
 
-func setUpRouter(logger *logrus.Logger, dGraphClient *client.Dgraph) *gin.Engine {
+func setUpRouter(logger *logrus.Logger, dGraphClient *dgo.Dgraph) *gin.Engine {
 	router := gin.New()
 
 	router.Use(gin.Logger())
@@ -54,16 +57,25 @@ func setUpRouter(logger *logrus.Logger, dGraphClient *client.Dgraph) *gin.Engine
 	})
 
 	router.Use(func(c *gin.Context) {
+		c.Set("host", host)
+		c.Set("port", port)
+		c.Set("dGraphClient", dGraphClient)
 		c.Set("log", logger)
 	})
-	router.Use(func(c *gin.Context) {
-		c.Set("dGraphClient", dGraphClient)
-	})
+
 	router.POST("/query", api.QueryHandler)
 	router.POST("/mutate", api.MutationHandler)
 	router.POST("/alter", api.AlterationHandler)
 
+	// GitHub OAuth2
+	router.GET("/account/github/callback", auth.GithubCallback)
+	router.GET("/link/github", auth.GithubInit)
+
 	return router
+}
+
+func csrfFailHandler(w http.ResponseWriter, r *http.Request) {
+    fmt.Fprintf(w, "%s\n", nosurf.Reason(r))
 }
 
 func main() {
@@ -91,7 +103,7 @@ func main() {
 	})
 
 	dgc := protosAPI.NewDgraphClient(conn)
-	dGraphClient := client.NewDgraphClient(dgc)
+	dGraphClient := dgo.NewDgraphClient(dgc)
 
 	router := setUpRouter(logger, dGraphClient)
 	server := &http.Server{
@@ -114,6 +126,5 @@ func main() {
 		os.Exit(0)
 	}()
 
-	logger.Info("Starting...")
 	logger.WithError(router.Run(host + ":" + port)).Fatal("Error in setting up HTTP server.")
 }

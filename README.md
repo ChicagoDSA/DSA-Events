@@ -28,13 +28,16 @@ One important note is that this API uses docker as middleware, so please follow 
 
 ## Start DGraph
 
-Run the following commands to get your dgraph instance running locally.
-
-### Docker compose
-
-To get the database running, navigate to the project's `/db` directory and simply run docker compose:
+Run the following command to get your dgraph instance running locally via the included docker compose file:
 
 `docker-compose up -d`
+
+This will start Dgraph Server, Zero (Dgraph Instance Manager) and Ratel (Dgraph Console UI). 
+
+### DEPRECATED (Dgraph prior to dgraphzero implementation)
+Run DGraph instance with ports mapped:
+
+`docker run --rm -it -p 8080:8080 -p 9080:9080 -v ~/dgraph:/dgraph --name dgraph dgraph/dgraph dgraph --bindall=true --memory_mb 2048`
 
 ---
 
@@ -52,19 +55,11 @@ Run:
 
 `make build`
 
-(Without Make):
-
-`go build main.go`
-
 ## Run project
 
 Run:
 
 `make run`
-
-(Without Make):
-
-`./main`
 
 ---
 
@@ -77,28 +72,27 @@ This query will get an Event with all the available parameters. It will get an E
 ##### Body:
 ```
 {
-	Event(func: uid(0x2)) {
+	Event(func: uid(0x3)) {
 		uid
-		name
-		time
-		location
-		description
-		chapter {
-			name
-			location
-			contact {
-				name
-				phone_number
-				email
-				facebook
-				twitter
-			}
-		}
-		working_group {
-			name
-			description
-		}
-	}	
+	    name
+	    description
+	    location
+	    time
+	    working_group {
+	      name
+	      description
+	    }
+	    chapter {
+	      name
+	      location
+	      contact {
+	        name
+	        email
+	        facebook
+	        twitter
+	      }
+	    }
+	}
 }
 ```
 
@@ -108,48 +102,33 @@ This query will get an Event with all the available parameters. It will get an E
 This is a sample mutation that will create a new Event with the parameters given.
 ##### Body:
 ```
-[
-	{
-		"uid": "0x2",
-		"name": "Labor Media Training",
-		"time": "2018-05-01T15:30:00Z",
-		"description": "Are you new to labor activism and want to get better at communication when someone sticks a camera in front of you? Then this event is just for you.",
+{
+	"name":"Name of event",
+	"description":"Event's description.",
+	"location": {
+		"type": "Point", 
+		"coordinates": [17.8803304,-245.6662756]
+	},
+	"time":"2018-05-01T15:30:00Z",
+	"date":"02-11-18",
+	"working_group": {
+		"name": "Chapter working group",
+		"description": "Chapter working group "
+	},
+	"chapter": {
+		"name": "Hosting chapter",
 		"location": {
-			"type": "Point",
-			"coordinates": [
-				41.8803304,
-				-87.6662756
-			]
+			"type": "Point", 
+			"coordinates": [41.8803304,-87.6662756]
 		},
-		"working_group": [
-			{
-				"name": "CDSA Labor Working Group",
-				"description": "Chicago DSA Labor with a focus on unions."
-			}
-		],
-		"chapter": [
-			{
-				"name": "CDSA",
-				"location": {
-					"type": "Point",
-					"coordinates": [
-						41.9317779,
-						-87.7126819
-					]
-				},
-				"contact": [
-					{
-						"name": "John Doe",
-						"phone_number": "(123) 456-7890",
-						"email": "jdoe@hotmail.com",
-						"facebook": "John Doe",
-						"twitter": "@JohnDoe"
-					}
-				]
-			}
-		]
-	}
-]
+		"contact": {
+			"name":"John Doe",
+			"email":"doe@hotmail.com",
+			"facebook":"John Doe",
+			"twitter":"@johndoe"
+		}
+	},
+}
 ```
 
 ---
