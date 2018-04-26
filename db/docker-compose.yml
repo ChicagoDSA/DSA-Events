@@ -9,10 +9,11 @@ services:
         volume:
           nocopy: true
     ports:
-      - 5080:5080
-      - 6080:6080
+      - 127.0.0.1:5080:5080
+      - 127.0.0.1:6080:6080
     restart: on-failure
     command: dgraph zero --my=zero:5080
+    container_name: dsa_events_zero
   server:
     image: dgraph/dgraph:latest
     volumes:
@@ -22,10 +23,11 @@ services:
         volume:
           nocopy: true
     ports:
-      - 8080:8080
-      - 9080:9080
+      - 127.0.0.1:8080:8080
+      - 127.0.0.1:9080:9080
     restart: on-failure
     command: dgraph server --my=server:7080 --memory_mb=2048 --zero=zero:5080
+    container_name: dsa_events_server
   ratel:
     image: dgraph/dgraph:latest
     volumes:
@@ -35,8 +37,8 @@ services:
         volume:
           nocopy: true
     ports:
-      - 8000:8000
+      - 127.0.0.1:8000:8000
     command: dgraph-ratel
-
+    container_name: dsa_events_ratel
 volumes:
   dgraph:
