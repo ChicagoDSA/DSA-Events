@@ -20,3 +20,5 @@ creds.json
 
 !*.go
 main
+
+populater/tmp

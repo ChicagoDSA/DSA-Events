@@ -17,6 +17,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/justinas/nosurf"
 	"github.com/sirupsen/logrus"
+	"github.com/gocolly/colly"
 	"google.golang.org/grpc"
 )
 
@@ -92,6 +93,22 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	logger.WithField("level", logLevel.String()).Debug("Log Level Set")
+
+	// Testing web scraper
+	c := colly.NewCollector()
+
+	testLink := "https://duckduckgo.com/"
+	logger.Info("Testing Colly WebScraper on: "+testLink)
+	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
+		link := e.Attr("href")
+
+		logger.WithFields(logrus.Fields{
+			"text": e.Text,
+			"link": link,
+		}).Info("Link found!")
+	})
+
+	c.Visit(testLink)
 
 	// Establish DGraph connection via gRPC
 	conn, err := grpc.Dial(grpcHost+":"+grpcPort, grpc.WithInsecure())
