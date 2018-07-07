@@ -53,7 +53,7 @@ func main() {
 	body, err := ioutil.ReadAll(resp.Body)
 	//logger.WithField("ICS File", string(body)).Info("ICS file from link")
 
-	f, err := os.Create("tmp/cal_data.ics")
+	f, err := os.Create("cal_data.ics")
 	if (err != nil) {
 		logger.WithError(err).Fatal("Error creating temporary dir+file for data");
 	}
@@ -70,7 +70,7 @@ func main() {
 
 	inputChat := parser.GetInputChan()
 
-	inputChat <- "tmp/cal_data.ics"
+	inputChat <- "cal_data.ics"
 
 	parser.Wait()
 
