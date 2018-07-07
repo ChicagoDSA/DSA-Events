@@ -26,7 +26,7 @@ services:
       - 127.0.0.1:8080:8080
       - 127.0.0.1:9080:9080
     restart: on-failure
-    command: dgraph server --my=server:7080 --memory_mb=2048 --zero=zero:5080
+    command: dgraph server --my=server:7080 --lru_mb=2048 --zero=zero:5080
     container_name: dsa_events_server
   ratel:
     image: dgraph/dgraph:latest
