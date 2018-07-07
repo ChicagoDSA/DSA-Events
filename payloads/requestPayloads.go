@@ -11,7 +11,7 @@ type ContactRequest struct {
 type ChapterRequest struct {
 	Uid     	string         `json:"uid,omitempty"`
 	Name     	string         `json:"name,omitempty"`
-	Location 	LocationRequest`json:"location_request,omitempty"`
+	Location 	*LocationRequest`json:"location,omitempty"`
 	Contact 	*ContactRequest `json:"contact,omitempty"`
 }
 
@@ -32,7 +32,7 @@ type EventRequest struct {
 	Uid            string				`json:"uid,omitempty"`
 	Name           string				`json:"name,omitempty"`
 	Description    string				`json:"description,omitempty"`
-	Location       LocationRequest 	`json:"location,omitempty"`
+	Location       *LocationRequest 	`json:"location,omitempty"`
 	Time           string				`json:"time,omitempty"`
 	WorkingGroup   *WorkingGroupRequest `json:"working_group,omitempty"`
 	ChapterRequest *ChapterRequest		`json:"chapter,omitempty"`

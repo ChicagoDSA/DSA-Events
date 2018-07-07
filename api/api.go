@@ -4,6 +4,7 @@ import (
 	"github.com/ChicagoDSA/DSA-Events/payloads"
 	"github.com/ChicagoDSA/DSA-Events/auth"
 
+	
 	"bytes"
 	"context"
 	"encoding/json"
@@ -94,9 +95,10 @@ func MutationHandler(c *gin.Context) {
 		log.Warn("Deleting node.")
 		eventMutation.DeleteJson = eventJson
 	} else {
-		log.Warn("Creating/Updating node.")
 		eventMutation.SetJson = eventJson
 	}
+
+
 
 	// Send mutation
 	resp, err := txn.Mutate(context.Background(), eventMutation)

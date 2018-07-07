@@ -15,8 +15,8 @@ import (
 	"github.com/dgraph-io/dgo"
 	protosAPI "github.com/dgraph-io/dgo/protos/api"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 	"github.com/justinas/nosurf"
+	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 )
 
@@ -75,7 +75,7 @@ func setUpRouter(logger *logrus.Logger, dGraphClient *dgo.Dgraph) *gin.Engine {
 }
 
 func csrfFailHandler(w http.ResponseWriter, r *http.Request) {
-    fmt.Fprintf(w, "%s\n", nosurf.Reason(r))
+	fmt.Fprintf(w, "%s\n", nosurf.Reason(r))
 }
 
 func main() {

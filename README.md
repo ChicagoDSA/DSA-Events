@@ -110,7 +110,6 @@ This is a sample mutation that will create a new Event with the parameters given
 		"coordinates": [17.8803304,-245.6662756]
 	},
 	"time":"2018-05-01T15:30:00Z",
-	"date":"02-11-18",
 	"working_group": {
 		"name": "Chapter working group",
 		"description": "Chapter working group "
@@ -127,7 +126,7 @@ This is a sample mutation that will create a new Event with the parameters given
 			"facebook":"John Doe",
 			"twitter":"@johndoe"
 		}
-	},
+	}
 }
 ```
 
