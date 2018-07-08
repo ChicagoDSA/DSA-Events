@@ -22,3 +22,4 @@ creds.json
 main
 
 populater/tmp
+*.ics
