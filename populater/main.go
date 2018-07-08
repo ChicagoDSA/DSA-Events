@@ -81,28 +81,43 @@ func main() {
 		logger.WithError(err).Fatal("Error getting calendars from ICS parser")
 	}
 
-	logger.WithField("Calendar[0]", cal[0]).Info("First calendar parsed from ICS file")
 
-	// parser := ics.New()
-	// parserChan := parser.GetInputChan()
-	// parserChan <- links.Sites[0].Link;
+	for _, calendar := range cal {
+		for _, event := range calendar.GetEvents() {
+			logger.WithField("Event Description", event.GetDescription()).Info("Event from calendar")
+			logger.WithField("Event Location", event.GetLocation()).Info("Event from calendar")
+		}
+	}
 
-	// parser.Wait()
+	// TODO: Create Event struct from Event
 
-	// cal, err := parser.GetCalendars()
-	// if err == nil {
-	// 	for _, calendar := range cal {
-	// 		fmt.Println(calendar.GetName(), calendar.GetDesc())
-	// 	}
-	// }
-	// calendar, err := ics.ParseCalendar(links.Sites[0].Link, 0, nil)
-	// if err != nil {
-	// 	logger.WithError(err).Fatal("Error parsing calendar from ICS")
-	// }
-
-	// logger.Info("Parsed calendar name: " + calendar.Name)
-
-	
-
+	eventMutation := `
+	{
+		"name":"Name of event",
+		"description":"Event's description.",
+		"location": {
+			"type": "Point", 
+			"coordinates": [17.8803304,-245.6662756]
+		},
+		"time":"2018-05-01T15:30:00Z",
+		"working_group": {
+			"name": "Working group's name",
+			"description": "Description of working group."
+		},
+		"chapter": {
+			"name": "Hosting chapter's name",
+			"location": {
+				"type": "Point", 
+				"coordinates": [18.8803304,-245.6662756]
+			},
+			"contact": {
+				"name":"John Doe",
+				"email":"doe@hotmail.com",
+				"facebook":"John Doe",
+				"twitter":"@johndoe"
+			}
+		}
+	}
+	`
 
 }
